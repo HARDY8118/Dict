@@ -7,19 +7,18 @@ pipeline {
         stage('Cloning') {
             steps {
                 git "https://github.com/HARDY8118/Dict.git"
-                sh "cd client"
             }
         }
 
         stage('Install dependencies') {
             steps {
-                sh "npm install"
+                yarn 'install' workspaceSubdirectory 'client'
             }
         }
 
         stage('Build files') {
             steps {
-                sh "npm run build" 
+                yarn 'build' workspaceSubdirectory 'client'
             }
         }
 
