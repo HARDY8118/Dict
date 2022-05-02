@@ -12,13 +12,13 @@ pipeline {
 
         stage('Install dependencies') {
             steps {
-                yarn 'install' workspaceSubdirectory 'client'
+                yarn command: 'install' workspaceSubdirectory 'client'
             }
         }
 
         stage('Build files') {
             steps {
-                yarn 'build' workspaceSubdirectory 'client'
+                yarn command: 'build' workspaceSubdirectory 'client'
             }
         }
 
