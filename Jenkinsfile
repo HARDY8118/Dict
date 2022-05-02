@@ -37,10 +37,12 @@ pipeline {
 
         stage('Build server files') {
             steps {
-                dir("${env.WORKSPACE}/Server"){
-                    sh "export GIN_MODE=release"
+                dir("${env.WORKSPACE}/Server") {
+                    withEnv(["GIN_MODE=release"]) {
+                    // sh "export GIN_MODE=release"
                     sh "go mod tidy"
                     sh "go build -o ../build/server ."
+                    }
                 }
             }
         }
