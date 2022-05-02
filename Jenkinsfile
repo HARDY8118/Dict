@@ -36,11 +36,9 @@ pipeline {
         }
 
         stage('Build server files') {
-            environemnt {
-                GIN_MODE="release"
-            }
             steps {
                 dir("${env.WORKSPACE}/Server"){
+                    sh "export GIN_MODE=release"
                     sh "go mod tidy"
                     sh "go build -o ../build/server ."
                 }
