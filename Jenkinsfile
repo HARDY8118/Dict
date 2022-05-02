@@ -1,7 +1,10 @@
 pipeline {
     agent any
     
-    tools {nodejs "Node 16.9.1"}
+    tools {
+        nodejs "Node 16.9.1"
+        go "Go"
+    }
 
     stages {
         stage('Cloning') {
@@ -12,28 +15,35 @@ pipeline {
 
         stage('Install dependencies') {
             steps {
-                yarn command: 'install', workspaceSubdirectory 'client'
+                sh "yarn --cwd client install"
             }
         }
 
-        stage('Build files') {
+        stage('Build client files') {
             steps {
-                yarn command: 'build', workspaceSubdirectory 'client'
+                dir("${env.WORKSPACE}/client"){
+                    sh "yarn build"
+                }
             }
         }
 
-        stage('Copy') {
+        stage('Copy client to build directory') {
             steps {
-                sh "cd .."
-                sh "rm -r Server/static/"
-                sh "mkdir Server/static"
-                sh "cp -r client/dist/* Server/static/"
+                sh "rm -rf build/static/"
+                sh "mkdir build/static"
+                sh "cp -r client/dist/* build/static/"
             }
         }
 
-        stage('Build docker build') {
+        stage('Build server files') {
+            environemnt {
+                GIN_MODE="release"
+            }
             steps {
-                sh "docker build -t goserver ."
+                dir("${env.WORKSPACE}/Server"){
+                    sh "go mod tidy"
+                    sh "go build -o ../build/server ."
+                }
             }
         }
     }
